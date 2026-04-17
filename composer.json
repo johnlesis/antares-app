@@ -1,0 +1,35 @@
+{
+    "name": "fatjon-lleshi/antares-app",
+    "description": "Skeleton application for the Antares framework",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "fatjon-lleshi/antares": "dev-main"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/johnlesis/antares"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/johnlesis/antares-validation"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/johnlesis/antares-container"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/johnlesis/antares-router"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
