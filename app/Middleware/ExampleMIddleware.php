@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use Antares\Middleware\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-final class ExampleMiddleware
+final class ExampleMiddleware implements MiddlewareInterface
 {
     public function handle(
         ServerRequestInterface $request,
