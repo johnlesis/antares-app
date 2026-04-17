@@ -11,6 +11,8 @@ use App\Providers\RouteServiceProvider;
 Application::create(__DIR__ . '/..')
     ->providers([
         AppServiceProvider::class,    // bindings, singletons
+    ])
+    ->routeProviders([
         RouteServiceProvider::class,  // controllers
     ])
     ->middleware([
