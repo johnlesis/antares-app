@@ -62,6 +62,29 @@ return [
 ];
 ```
 
+### YAML based (requires `composer require symfony/yaml`)
+
+```yaml
+# config/routes.yaml
+routes:
+  - method: GET
+    path: /patients
+    controller: App\Controllers\PatientController
+    action: list
+    status: 200
+
+  - method: POST
+    path: /patients
+    controller: App\Controllers\PatientController
+    action: create
+    status: 201
+```
+
+Register in `RouteServiceProvider`:
+```php
+$router->registerFromYaml(__DIR__ . '/../../config/routes.yaml');
+```
+
 ## Middleware
 
 ```php
