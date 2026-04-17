@@ -30,12 +30,13 @@ php bin/antares make:dto CreatePatientRequest
 
 ## Directory structure
 
+```
 app/
 ├── Controllers/    ← your controllers
 ├── DTOs/           ← request/response DTOs
 └── Providers/
-├── AppServiceProvider.php    ← register bindings
-└── RouteServiceProvider.php  ← register controllers
+    ├── AppServiceProvider.php    ← register bindings
+    └── RouteServiceProvider.php  ← register controllers
 config/
 ├── app.php         ← app config
 └── routes.php      ← optional file-based routing
@@ -43,6 +44,7 @@ public/
 └── index.php       ← entry point
 storage/
 └── cache/          ← route cache (production)
+```
 
 ## Routing
 
