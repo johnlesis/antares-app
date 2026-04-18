@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares.git",
-                "reference": "b5a0fd34d852dbb3c8ab395ec26c54ea3e3e019d"
+                "reference": "c3bae1e38f953dcd5fc8bd4bc2306c117d2d515a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares/zipball/b5a0fd34d852dbb3c8ab395ec26c54ea3e3e019d",
-                "reference": "b5a0fd34d852dbb3c8ab395ec26c54ea3e3e019d",
+                "url": "https://api.github.com/repos/johnlesis/antares/zipball/c3bae1e38f953dcd5fc8bd4bc2306c117d2d515a",
+                "reference": "c3bae1e38f953dcd5fc8bd4bc2306c117d2d515a",
                 "shasum": ""
             },
             "require": {
@@ -39,8 +39,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Antares\\": "src/",
-                    "App\\": "app/"
+                    "Antares\\": "src/"
                 }
             },
             "license": [
@@ -57,7 +56,7 @@
                 "source": "https://github.com/johnlesis/antares/tree/main",
                 "issues": "https://github.com/johnlesis/antares/issues"
             },
-            "time": "2026-04-17T17:26:25+00:00"
+            "time": "2026-04-18T13:12:06+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-container",
@@ -154,12 +153,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-validation.git",
-                "reference": "ce4d07fd352646ebb2463ed916a0d46f7637338c"
+                "reference": "7a8017d6936c179d37a418f9d4ee29f21a95aebe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares-validation/zipball/ce4d07fd352646ebb2463ed916a0d46f7637338c",
-                "reference": "ce4d07fd352646ebb2463ed916a0d46f7637338c",
+                "url": "https://api.github.com/repos/johnlesis/antares-validation/zipball/7a8017d6936c179d37a418f9d4ee29f21a95aebe",
+                "reference": "7a8017d6936c179d37a418f9d4ee29f21a95aebe",
                 "shasum": ""
             },
             "require": {
@@ -190,7 +189,7 @@
                 "source": "https://github.com/johnlesis/antares-validation/tree/main",
                 "issues": "https://github.com/johnlesis/antares-validation/issues"
             },
-            "time": "2026-04-17T13:03:04+00:00"
+            "time": "2026-04-18T12:15:10+00:00"
         },
         {
             "name": "graham-campbell/result-type",

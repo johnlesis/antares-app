@@ -15,7 +15,7 @@ Application::create(__DIR__ . '/..')
     ->routeProviders([
         RouteServiceProvider::class,  // controllers
     ])
-    ->middleware([
-        ExampleMiddleware::class, //middleware
-    ])
+    // ->middleware([
+    //     ExampleMiddleware::class, //middleware
+    // ])
     ->run();
