@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares.git",
-                "reference": "c3bae1e38f953dcd5fc8bd4bc2306c117d2d515a"
+                "reference": "b638a310b8939e381701110407323869899108f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares/zipball/c3bae1e38f953dcd5fc8bd4bc2306c117d2d515a",
-                "reference": "c3bae1e38f953dcd5fc8bd4bc2306c117d2d515a",
+                "url": "https://api.github.com/repos/johnlesis/antares/zipball/b638a310b8939e381701110407323869899108f8",
+                "reference": "b638a310b8939e381701110407323869899108f8",
                 "shasum": ""
             },
             "require": {
@@ -56,7 +56,7 @@
                 "source": "https://github.com/johnlesis/antares/tree/main",
                 "issues": "https://github.com/johnlesis/antares/issues"
             },
-            "time": "2026-04-18T13:12:06+00:00"
+            "time": "2026-04-18T15:40:11+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-container",

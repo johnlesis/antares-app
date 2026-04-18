@@ -1,9 +1,9 @@
 <?php
 
-use App\Controllers\ExampleController;
+use App\Controllers\TestController;
 
 return [
-    ['GET',  '/',        ExampleController::class, 'index',  200],
-    ['GET',  '/example', ExampleController::class, 'list',   200],
-    ['POST', '/example', ExampleController::class, 'create', 201],
+    ['GET',  '/',        TestController::class, 'index',  200],
+    ['GET',  '/example', TestController::class, 'list',   200],
+    ['POST', '/example', TestController::class, 'create', 201],
 ];

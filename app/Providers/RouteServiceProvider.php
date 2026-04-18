@@ -7,7 +7,7 @@ namespace App\Providers;
 use Antares\ServiceProvider;
 use Antares\Container\Container;
 use Antares\Router\Router;
-use App\Controllers\ExampleController;
+use App\Controllers\TestController;
 
 final class RouteServiceProvider implements ServiceProvider
 {
@@ -15,7 +15,7 @@ final class RouteServiceProvider implements ServiceProvider
     {
         $router = $container->make(Router::class);
 
-        $router->register(ExampleController::class);
+        $router->register(TestController::class);
 
         // $router->registerFromConfig(require __DIR__ . '/../../config/routes.php');
         // $router->registerFromYaml(__DIR__ . '/../../config/routes.yaml');
