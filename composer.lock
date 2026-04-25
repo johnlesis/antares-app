@@ -4,35 +4,39 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "848df05131afeb3aeaf807baca55f35e",
+    "content-hash": "33822271e25ce8004c0260d4ded3bbdd",
     "packages": [
         {
             "name": "fatjon-lleshi/antares",
-            "version": "dev-main",
+            "version": "v0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares.git",
-                "reference": "214b4ef6d4304089dbbbf507f3149197f1eaee9d"
+                "reference": "f2821890046e8d3a127f04dea095471518a3bd67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares/zipball/214b4ef6d4304089dbbbf507f3149197f1eaee9d",
-                "reference": "214b4ef6d4304089dbbbf507f3149197f1eaee9d",
+                "url": "https://api.github.com/repos/johnlesis/antares/zipball/f2821890046e8d3a127f04dea095471518a3bd67",
+                "reference": "f2821890046e8d3a127f04dea095471518a3bd67",
                 "shasum": ""
             },
             "require": {
-                "fatjon-lleshi/antares-container": "dev-main",
-                "fatjon-lleshi/antares-router": "dev-main",
-                "fatjon-lleshi/antares-validation": "dev-main",
+                "fatjon-lleshi/antares-container": "^0.1.0",
+                "fatjon-lleshi/antares-router": "^0.1.0",
+                "fatjon-lleshi/antares-validation": "^0.1.0",
                 "nyholm/psr7": "^1.8",
                 "nyholm/psr7-server": "^1.1",
                 "php": ">=8.2",
                 "vlucas/phpdotenv": "^5.6"
             },
             "require-dev": {
+                "phpstan/phpstan": "^2.0",
                 "phpunit/phpunit": "^11.0"
             },
-            "default-branch": true,
+            "suggest": {
+                "ext-swoole": "Required to use runSwoole()",
+                "ilexn/swoole-psr7": "Required to use runSwoole()"
+            },
             "bin": [
                 "bin/antares"
             ],
@@ -42,6 +46,7 @@
                     "Antares\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -52,39 +57,50 @@
                 }
             ],
             "description": "Lightweight API first PHP framework for PHP 8.2+",
+            "homepage": "https://github.com/johnlesis/antares",
+            "keywords": [
+                "api",
+                "dependency-injection",
+                "framework",
+                "http",
+                "php",
+                "psr-7",
+                "rest"
+            ],
             "support": {
-                "source": "https://github.com/johnlesis/antares/tree/v0.1.0",
-                "issues": "https://github.com/johnlesis/antares/issues"
+                "issues": "https://github.com/johnlesis/antares/issues",
+                "source": "https://github.com/johnlesis/antares"
             },
-            "time": "2026-04-23T21:11:23+00:00"
+            "time": "2026-04-25T11:59:21+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-container",
-            "version": "dev-main",
+            "version": "v0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-container.git",
-                "reference": "4642d563e1bef1ce08d827daea470615ae53b51c"
+                "reference": "dcf6b6a5f4483e8cb8ec6a250cf5381f8c379459"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares-container/zipball/4642d563e1bef1ce08d827daea470615ae53b51c",
-                "reference": "4642d563e1bef1ce08d827daea470615ae53b51c",
+                "url": "https://api.github.com/repos/johnlesis/antares-container/zipball/dcf6b6a5f4483e8cb8ec6a250cf5381f8c379459",
+                "reference": "dcf6b6a5f4483e8cb8ec6a250cf5381f8c379459",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.2"
             },
             "require-dev": {
+                "phpstan/phpstan": "^2.0",
                 "phpunit/phpunit": "^11.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "Antares\\Container\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -95,24 +111,32 @@
                 }
             ],
             "description": "Lightweight autowiring PSR-11 container for PHP 8.2+",
+            "homepage": "https://github.com/johnlesis/antares-container",
+            "keywords": [
+                "Autowiring",
+                "PSR-11",
+                "container",
+                "dependency-injection",
+                "php"
+            ],
             "support": {
-                "source": "https://github.com/johnlesis/antares-container/tree/v0.1.0",
-                "issues": "https://github.com/johnlesis/antares-container/issues"
+                "issues": "https://github.com/johnlesis/antares-container/issues",
+                "source": "https://github.com/johnlesis/antares-container"
             },
-            "time": "2026-04-23T21:11:30+00:00"
+            "time": "2026-04-25T11:59:23+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-router",
-            "version": "dev-main",
+            "version": "v0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-router.git",
-                "reference": "d92b790da74a003a334c7bce00edacff5bf8878f"
+                "reference": "99f0b47a67e68e58ceccc99847a53b65047be41d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares-router/zipball/d92b790da74a003a334c7bce00edacff5bf8878f",
-                "reference": "d92b790da74a003a334c7bce00edacff5bf8878f",
+                "url": "https://api.github.com/repos/johnlesis/antares-router/zipball/99f0b47a67e68e58ceccc99847a53b65047be41d",
+                "reference": "99f0b47a67e68e58ceccc99847a53b65047be41d",
                 "shasum": ""
             },
             "require": {
@@ -120,6 +144,7 @@
                 "php": ">=8.2"
             },
             "require-dev": {
+                "phpstan/phpstan": "^2.0",
                 "phpunit/phpunit": "^11.0"
             },
             "suggest": {
@@ -131,6 +156,7 @@
                     "Antares\\Router\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -141,24 +167,33 @@
                 }
             ],
             "description": "Lightweight attribute-based router for PHP 8.2+",
+            "homepage": "https://github.com/johnlesis/antares-router",
+            "keywords": [
+                "attributes",
+                "http",
+                "php",
+                "rest",
+                "router",
+                "routing"
+            ],
             "support": {
-                "source": "https://github.com/johnlesis/antares-router/tree/v0.1.0",
-                "issues": "https://github.com/johnlesis/antares-router/issues"
+                "issues": "https://github.com/johnlesis/antares-router/issues",
+                "source": "https://github.com/johnlesis/antares-router"
             },
-            "time": "2026-04-23T21:11:23+00:00"
+            "time": "2026-04-24T23:32:18+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-validation",
-            "version": "dev-main",
+            "version": "v0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-validation.git",
-                "reference": "178e57f80390bd8876e2681db2e1f20705f778c5"
+                "reference": "8b93557fbeed84ebed17e89e8681804234c46695"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares-validation/zipball/178e57f80390bd8876e2681db2e1f20705f778c5",
-                "reference": "178e57f80390bd8876e2681db2e1f20705f778c5",
+                "url": "https://api.github.com/repos/johnlesis/antares-validation/zipball/8b93557fbeed84ebed17e89e8681804234c46695",
+                "reference": "8b93557fbeed84ebed17e89e8681804234c46695",
                 "shasum": ""
             },
             "require": {
@@ -169,20 +204,14 @@
                 "phpstan/phpstan": "^2.0",
                 "phpunit/phpunit": "^11.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Antares\\Validation\\": "src/Validation/",
-                    "Antares\\Hydration\\": "src/Hydration/"
+                    "Antares\\Hydration\\": "src/Hydration/",
+                    "Antares\\Validation\\": "src/Validation/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Antares\\Tests\\Validation\\": "tests/Validation/",
-                    "Antares\\Tests\\Hydration\\": "tests/Hydration/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -204,7 +233,7 @@
                 "issues": "https://github.com/johnlesis/antares-validation/issues",
                 "source": "https://github.com/johnlesis/antares-validation"
             },
-            "time": "2026-04-24T06:47:48+00:00"
+            "time": "2026-04-24T23:32:22+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -984,11 +1013,9 @@
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "fatjon-lleshi/antares": 20
-    },
-    "prefer-stable": true,
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.2"

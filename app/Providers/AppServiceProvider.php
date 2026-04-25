@@ -14,5 +14,7 @@ final class AppServiceProvider implements ServiceProvider
         // Register your service bindings here
         // Example:
         // $container->singleton(DatabaseInterface::class, fn() => new Database($_ENV['DB_HOST'], ...));
+        // scoped per request
+        // $container->scoped(CurrentUser:class, fn() -> new CurrentUser);
     }
 }
