@@ -1,9 +1,16 @@
 <?php
 
-use App\Controllers\TestController;
+/**
+ * File-based route definitions (alternative to attribute-based routing).
+ *
+ * Format: [METHOD, PATH, CONTROLLER, ACTION, STATUS_CODE]
+ *
+ * To use this file, uncomment the registerFromConfig line in RouteServiceProvider.
+ */
+
+use App\Controllers\WelcomeController;
 
 return [
-    ['GET',  '/',        TestController::class, 'index',  200],
-    ['GET',  '/example', TestController::class, 'list',   200],
-    ['POST', '/example', TestController::class, 'create', 201],
+    ['GET', '/', WelcomeController::class, 'index', 200],
+    ['GET', '/health', WelcomeController::class, 'health', 200],
 ];

@@ -11,16 +11,8 @@ final class AppServiceProvider implements ServiceProvider
 {
     public function register(Container $container): void
     {
-        //example
-        // $container->singleton(Database::class, function () {
-        //     return new Database(
-        //         $_ENV['DB_DRIVER'],
-        //         $_ENV['DB_HOST'],
-        //         $_ENV['DB_PORT'],
-        //         $_ENV['DB_DATABASE'],
-        //         $_ENV['DB_USERNAME'],
-        //         $_ENV['DB_PASSWORD'],
-        //     );
-        // });
+        // Register your service bindings here
+        // Example:
+        // $container->singleton(DatabaseInterface::class, fn() => new Database($_ENV['DB_HOST'], ...));
     }
 }

@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares.git",
-                "reference": "b638a310b8939e381701110407323869899108f8"
+                "reference": "214b4ef6d4304089dbbbf507f3149197f1eaee9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares/zipball/b638a310b8939e381701110407323869899108f8",
-                "reference": "b638a310b8939e381701110407323869899108f8",
+                "url": "https://api.github.com/repos/johnlesis/antares/zipball/214b4ef6d4304089dbbbf507f3149197f1eaee9d",
+                "reference": "214b4ef6d4304089dbbbf507f3149197f1eaee9d",
                 "shasum": ""
             },
             "require": {
@@ -30,7 +30,7 @@
                 "vlucas/phpdotenv": "^5.6"
             },
             "require-dev": {
-                "phpunit/phpunit": "^13.1"
+                "phpunit/phpunit": "^11.0"
             },
             "default-branch": true,
             "bin": [
@@ -53,10 +53,10 @@
             ],
             "description": "Lightweight API first PHP framework for PHP 8.2+",
             "support": {
-                "source": "https://github.com/johnlesis/antares/tree/main",
+                "source": "https://github.com/johnlesis/antares/tree/v0.1.0",
                 "issues": "https://github.com/johnlesis/antares/issues"
             },
-            "time": "2026-04-18T15:40:11+00:00"
+            "time": "2026-04-23T21:11:23+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-container",
@@ -64,19 +64,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-container.git",
-                "reference": "a7a05cd9509216d0b83e525ffda001ae236498db"
+                "reference": "4642d563e1bef1ce08d827daea470615ae53b51c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares-container/zipball/a7a05cd9509216d0b83e525ffda001ae236498db",
-                "reference": "a7a05cd9509216d0b83e525ffda001ae236498db",
+                "url": "https://api.github.com/repos/johnlesis/antares-container/zipball/4642d563e1bef1ce08d827daea470615ae53b51c",
+                "reference": "4642d563e1bef1ce08d827daea470615ae53b51c",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^13.1"
+                "phpunit/phpunit": "^11.0"
             },
             "default-branch": true,
             "type": "library",
@@ -96,10 +96,10 @@
             ],
             "description": "Lightweight autowiring PSR-11 container for PHP 8.2+",
             "support": {
-                "source": "https://github.com/johnlesis/antares-container/tree/main",
+                "source": "https://github.com/johnlesis/antares-container/tree/v0.1.0",
                 "issues": "https://github.com/johnlesis/antares-container/issues"
             },
-            "time": "2026-04-17T12:18:16+00:00"
+            "time": "2026-04-23T21:11:30+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-router",
@@ -107,12 +107,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-router.git",
-                "reference": "ea084da0dd6c75c6d1acd82b53df90c5a5b7747a"
+                "reference": "d92b790da74a003a334c7bce00edacff5bf8878f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares-router/zipball/ea084da0dd6c75c6d1acd82b53df90c5a5b7747a",
-                "reference": "ea084da0dd6c75c6d1acd82b53df90c5a5b7747a",
+                "url": "https://api.github.com/repos/johnlesis/antares-router/zipball/d92b790da74a003a334c7bce00edacff5bf8878f",
+                "reference": "d92b790da74a003a334c7bce00edacff5bf8878f",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +120,7 @@
                 "php": ">=8.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^13.1"
+                "phpunit/phpunit": "^11.0"
             },
             "suggest": {
                 "symfony/yaml": "Required for YAML route configuration (^6.0)"
@@ -142,10 +142,10 @@
             ],
             "description": "Lightweight attribute-based router for PHP 8.2+",
             "support": {
-                "source": "https://github.com/johnlesis/antares-router/tree/main",
+                "source": "https://github.com/johnlesis/antares-router/tree/v0.1.0",
                 "issues": "https://github.com/johnlesis/antares-router/issues"
             },
-            "time": "2026-04-17T15:27:28+00:00"
+            "time": "2026-04-23T21:11:23+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-validation",
@@ -153,19 +153,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-validation.git",
-                "reference": "7a8017d6936c179d37a418f9d4ee29f21a95aebe"
+                "reference": "178e57f80390bd8876e2681db2e1f20705f778c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares-validation/zipball/7a8017d6936c179d37a418f9d4ee29f21a95aebe",
-                "reference": "7a8017d6936c179d37a418f9d4ee29f21a95aebe",
+                "url": "https://api.github.com/repos/johnlesis/antares-validation/zipball/178e57f80390bd8876e2681db2e1f20705f778c5",
+                "reference": "178e57f80390bd8876e2681db2e1f20705f778c5",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.2"
+                "php": ">=8.2",
+                "psr/http-message": "^1.0|^2.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^13.1"
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": "^11.0"
             },
             "default-branch": true,
             "type": "library",
@@ -173,6 +175,12 @@
                 "psr-4": {
                     "Antares\\Validation\\": "src/Validation/",
                     "Antares\\Hydration\\": "src/Hydration/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Antares\\Tests\\Validation\\": "tests/Validation/",
+                    "Antares\\Tests\\Hydration\\": "tests/Hydration/"
                 }
             },
             "license": [
@@ -185,11 +193,18 @@
                 }
             ],
             "description": "Lightweight DTO hydration and validation for PHP 8.2+",
+            "homepage": "https://github.com/johnlesis/antares-validation",
+            "keywords": [
+                "dto",
+                "hydration",
+                "php",
+                "validation"
+            ],
             "support": {
-                "source": "https://github.com/johnlesis/antares-validation/tree/main",
-                "issues": "https://github.com/johnlesis/antares-validation/issues"
+                "issues": "https://github.com/johnlesis/antares-validation/issues",
+                "source": "https://github.com/johnlesis/antares-validation"
             },
-            "time": "2026-04-18T12:15:10+00:00"
+            "time": "2026-04-24T06:47:48+00:00"
         },
         {
             "name": "graham-campbell/result-type",
