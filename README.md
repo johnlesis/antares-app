@@ -1,7 +1,33 @@
 # antares
-
 Lightweight API-focused PHP framework for PHP 8.2+. Built around explicitness, type safety, and contract-first design.
 
+## Creator Message
+
+This started as a passion project — I wanted to understand the "magic" other 
+frameworks offer, magic I always found a bit too hand-wavy for my taste.
+
+I work with PHP professionally and after playing around with other languages and 
+frameworks I kept coming back to it. What started as a simple validation and hydration 
+package eventually snowballed into this.
+
+I care a lot about contract-first design — explicit in/out contracts on every endpoint. 
+Especially in microservices this matters: it keeps things predictable, integrations 
+honest, and adds a natural layer of security by making sure data is always validated 
+and shaped before it touches your business logic.
+
+Building this taught me more than I expected — not just about frameworks but about 
+why the design decisions in the ones I'd been using for years actually exist. That 
+alone made it worth it.
+
+A stable v1 for me means I've built the core myself and added enough bridges to 
+popular packages that you can make real choices about your stack without being forced 
+into anything. Until then I'd hold off on production use — it's not there yet.
+
+This is open source because that's what open source is for. Give it a try, break 
+things, open issues, contribute — all of it is welcome.
+
+ORM and other heavy dependencies are left out on purpose. That's your call, not mine.
+ 
 ## Installation
 
 ```bash
@@ -52,9 +78,21 @@ class AppServiceProvider implements ServiceProvider
             port: (int) $_ENV['MAIL_PORT'],
             secret: $_ENV['MAIL_SECRET'],
         ));
+
+        $container->scoped(UserContext::class, fn() => new UserContext());
     }
 }
 ```
+
+### Binding Types
+
+| Method | Lifetime | Use case |
+|--------|----------|----------|
+| `bind()` | New instance every `make()` call | Stateless services |
+| `singleton()` | Single instance for the entire process | DB connections, loggers, config |
+| `scoped()` | Single instance per request, reset on next | Authenticated user, tenant, request context |
+
+`scoped()` behaves like `singleton()` under traditional FPM since the process dies after each request. Under FrankenPHP and Swoole worker mode, scoped instances are automatically cleared at the start of each request — making them safe for storing request-specific state. Use `scoped()` whenever a binding should be fresh per request but shared across multiple points within that same request.
 
 ---
 
@@ -142,7 +180,7 @@ public function destroy(int $id): void
 }
 ```
 
-**`Nyholm\Psr7\Response`** — returned as-is, giving you full control over status code, headers, and body. Implements PSR-7 `ResponseInterface` so it is compatible with any PSR-7 middleware:
+**`Nyholm\Psr7\Response`** — returned as-is, giving you full control over status code, headers, and body:
 ```php
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -160,6 +198,19 @@ public function download(int $id): ResponseInterface
         ],
         body: $content,
     );
+}
+```
+
+### Query Parameters
+
+Scalar parameters not matching a route segment are resolved from the query string automatically and cast to the declared type:
+
+```php
+#[Get('/users')]
+public function index(int $page = 1, int $limit = 20): array
+{
+    // GET /users?page=2&limit=10
+    // $page = 2, $limit = 10
 }
 ```
 
@@ -226,6 +277,31 @@ readonly class CreateUserRequest
     ) {}
 }
 ```
+
+---
+
+## File Uploads
+
+Inject `UploadedFileInterface` directly into a controller parameter. The parameter name must match the field name in the multipart request. Use `#[File]` to validate size and MIME type:
+
+```php
+use Psr\Http\Message\UploadedFileInterface;
+use Antares\Validation\Attributes\File;
+
+class MediaController
+{
+    #[Post('/upload', 201)]
+    public function upload(
+        #[File(maxSize: 5 * 1024 * 1024, mimeTypes: ['image/jpeg', 'image/png'])]
+        UploadedFileInterface $avatar,
+    ): array {
+        $avatar->moveTo('/storage/' . uniqid() . '.jpg');
+        return ['uploaded' => true];
+    }
+}
+```
+
+If the file is missing or fails validation a `400` is returned automatically.
 
 ---
 
@@ -514,7 +590,7 @@ class AdminGuard implements Guard
 
 ### Multi-Tenant Guard
 
-Resolve the current tenant and inject it into the controller — useful for multi-tenant APIs where each request belongs to a specific tenant:
+Resolve the current tenant and inject it into the controller:
 
 ```php
 class TenantGuard implements Guard
@@ -538,6 +614,55 @@ class TenantGuard implements Guard
     }
 }
 ```
+
+### Guards and Worker Mode
+
+Guards are stateless by design — `resolve()` produces a value, returns it, and stores nothing on the guard itself. The resolved value lives on the controller parameter. This makes guards inherently safe under FrankenPHP and Swoole worker mode.
+
+Register guards as singletons when they have constructor dependencies:
+
+```php
+$container->singleton(JwtGuard::class, fn() => new JwtGuard(
+    secret: $_ENV['JWT_SECRET'],
+));
+```
+
+If a guard has no constructor dependencies, the container will autowire it automatically — no registration needed.
+
+If you need to share a resolved value across multiple points within the same request — for example fetching the current user from the DB only once — use a `scoped()` binding as a request-scoped cache. This is an advanced pattern and not the typical guard use case:
+
+```php
+$container->scoped(CurrentUser::class, fn() => new CurrentUser());
+```
+
+```php
+class JwtGuard implements Guard
+{
+    public function __construct(
+        private readonly string $secret,
+        private readonly UserRepository $users,
+        private readonly CurrentUser $currentUser,
+    ) {}
+
+    public function resolve(ServerRequestInterface $request): mixed
+    {
+        if ($this->currentUser->user !== null) {
+            return $this->currentUser->user;
+        }
+
+        $user = $this->users->findById($this->decodeToken($request));
+
+        if ($user === null) {
+            throw new HttpException(401, 'User not found');
+        }
+
+        $this->currentUser->user = $user;
+        return $this->currentUser->user;
+    }
+}
+```
+
+`scoped()` instances are cleared automatically at the start of each request — safe under FPM, FrankenPHP, and Swoole.
 
 ### Using Guards on Routes
 
@@ -594,13 +719,11 @@ class ReportController
 }
 ```
 
-If the guard has no constructor dependencies, the container will autowire it automatically — no registration needed.
-
 ---
 
 ## ResponseBag
 
-Set response headers from anywhere in the request lifecycle:
+Set response headers from anywhere in the request lifecycle without touching the response object directly:
 
 ```php
 use Antares\Http\ResponseBag;
@@ -609,7 +732,7 @@ ResponseBag::header('X-Request-Id', uniqid());
 ResponseBag::header('X-Rate-Limit-Remaining', '99');
 ```
 
-Headers are applied to the response automatically and cleared after each request.
+Headers are applied to the final response automatically. `ResponseBag` is cleared at the start of every request — safe under FPM, FrankenPHP, and Swoole worker mode.
 
 ---
 
@@ -726,6 +849,79 @@ php bin/antares cache:clear
 
 ---
 
+## Async Runtimes
+
+Antares supports three runtimes. All three go through the same `handle()` method — same providers, same routes, same middleware.
+
+### Traditional FPM
+
+```php
+Application::create(__DIR__ . '/..')
+    ->providers([AppServiceProvider::class])
+    ->routeProviders([RouteServiceProvider::class])
+    ->middleware([LogMiddleware::class])
+    ->run();
+```
+
+### FrankenPHP
+
+No additional dependencies needed. Create `worker.php` at the project root:
+
+```php
+Application::create(__DIR__)
+    ->providers([AppServiceProvider::class])
+    ->routeProviders([RouteServiceProvider::class])
+    ->middleware([LogMiddleware::class])
+    ->runWorker();
+```
+
+Point FrankenPHP at it via environment variable or `Caddyfile`:
+
+```env
+FRANKENPHP_CONFIG="worker worker.php"
+```
+
+### Swoole
+
+```bash
+pecl install swoole
+composer require ilexn/swoole-psr7
+```
+
+Create `swoole.php` at the project root:
+
+```php
+Application::create(__DIR__)
+    ->providers([AppServiceProvider::class])
+    ->routeProviders([RouteServiceProvider::class])
+    ->middleware([LogMiddleware::class])
+    ->runSwoole(host: '0.0.0.0', port: 8000);
+```
+
+Then run:
+
+```bash
+php swoole.php
+```
+
+### Custom Runtimes
+
+`handle()` accepts any PSR-7 `ServerRequestInterface` and returns a PSR-7 `ResponseInterface` — you can wire up any runtime yourself:
+
+```php
+$app = Application::create(__DIR__)
+    ->providers([AppServiceProvider::class])
+    ->routeProviders([RouteServiceProvider::class]);
+
+$app->boot();
+
+$response = $app->handle($psrRequest);
+```
+
+This works with ReactPHP, RoadRunner, Revolt, or any other PSR-7 compatible runtime.
+
+---
+
 ## Full Example
 
 A complete API with all features combined.
@@ -763,6 +959,8 @@ class AppServiceProvider implements ServiceProvider
             port: (int) $_ENV['MAIL_PORT'],
             secret: $_ENV['MAIL_SECRET'],
         ));
+
+        $container->scoped(CurrentUser::class, fn() => new CurrentUser());
     }
 }
 ```
@@ -873,9 +1071,10 @@ readonly class PostResponse
 class PostController
 {
     #[Get('/posts')]
-    public function index(): array
+    public function index(int $page = 1, int $limit = 20): array
     {
-        return ['posts' => []];
+        // GET /posts?page=2&limit=10
+        return ['posts' => [], 'page' => $page, 'limit' => $limit];
     }
 
     #[Get('/v1/posts/{id}')]
@@ -952,10 +1151,10 @@ class PostController
 }
 ```
 
-`GET /posts` — public, no auth needed.
+`GET /posts` — public, supports `?page` and `?limit` query parameters.
 `GET /v1/posts/{id}` — public, marked deprecated in OpenAPI spec.
-`GET /v2/posts/{id}` — public, returns serialized `PostResponse`, response schema auto-generated in OpenAPI.
-`POST /posts` — requires valid JWT, validates all fields and collects all errors, returns `201`.
+`GET /v2/posts/{id}` — public, returns serialized `PostResponse`.
+`POST /posts` — requires valid JWT, validates all fields, returns `201`.
 `DELETE /posts/{id}` — requires admin role, returns `204`.
 
 ---
