@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "fatjon-lleshi/antares",
-            "version": "v0.1.2",
+            "version": "v0.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares.git",
-                "reference": "f2821890046e8d3a127f04dea095471518a3bd67"
+                "reference": "51e0ae63e20cb7e7f6838f55f41a1ea1c70dbbfd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares/zipball/f2821890046e8d3a127f04dea095471518a3bd67",
-                "reference": "f2821890046e8d3a127f04dea095471518a3bd67",
+                "url": "https://api.github.com/repos/johnlesis/antares/zipball/51e0ae63e20cb7e7f6838f55f41a1ea1c70dbbfd",
+                "reference": "51e0ae63e20cb7e7f6838f55f41a1ea1c70dbbfd",
                 "shasum": ""
             },
             "require": {
@@ -71,11 +71,11 @@
                 "issues": "https://github.com/johnlesis/antares/issues",
                 "source": "https://github.com/johnlesis/antares"
             },
-            "time": "2026-04-25T11:59:21+00:00"
+            "time": "2026-04-27T13:06:06+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-container",
-            "version": "v0.1.2",
+            "version": "v0.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-container.git",
@@ -127,7 +127,7 @@
         },
         {
             "name": "fatjon-lleshi/antares-router",
-            "version": "v0.1.2",
+            "version": "v0.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-router.git",
@@ -184,16 +184,16 @@
         },
         {
             "name": "fatjon-lleshi/antares-validation",
-            "version": "v0.1.2",
+            "version": "v0.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-validation.git",
-                "reference": "8b93557fbeed84ebed17e89e8681804234c46695"
+                "reference": "4cf985d51e7e85fd95bb5d80a0e1954d9ef36095"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares-validation/zipball/8b93557fbeed84ebed17e89e8681804234c46695",
-                "reference": "8b93557fbeed84ebed17e89e8681804234c46695",
+                "url": "https://api.github.com/repos/johnlesis/antares-validation/zipball/4cf985d51e7e85fd95bb5d80a0e1954d9ef36095",
+                "reference": "4cf985d51e7e85fd95bb5d80a0e1954d9ef36095",
                 "shasum": ""
             },
             "require": {
@@ -233,7 +233,7 @@
                 "issues": "https://github.com/johnlesis/antares-validation/issues",
                 "source": "https://github.com/johnlesis/antares-validation"
             },
-            "time": "2026-04-24T23:32:22+00:00"
+            "time": "2026-04-26T12:53:41+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -676,7 +676,7 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.36.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
@@ -735,7 +735,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.36.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -759,7 +759,7 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.36.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
@@ -820,7 +820,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.36.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -844,7 +844,7 @@
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.36.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
@@ -904,7 +904,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.36.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.37.0"
             },
             "funding": [
                 {

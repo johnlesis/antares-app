@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Guards;
 
 use Antares\Exceptions\HttpException;
-use Antares\Http\Guards\Guard;
+use Antares\Http\ResolverInterfaces\Guard;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
