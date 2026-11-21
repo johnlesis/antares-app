@@ -7,9 +7,15 @@ namespace App\DTOs\Response;
 use Antares\Serialization\Attributes\ResponseDto;
 use Antares\Serialization\Attributes\Hide;
 use Antares\Serialization\Attributes\SerializeAs;
-use DateTimeImmutable;
+use Antares\Serialization\CaseStyle;
 
-#[ResponseDto(case: 'snake_case')]
+/**
+ * Output: {"id": 1, "name": "…", "email": "…", "member_since": "2026-01-15T10:30:00+00:00"}
+ *
+ * Dates are passed in as strings: the serializer outputs objects that aren't
+ * #[ResponseDto] as-is, so format them first, e.g. $user->createdAt->format(DATE_ATOM).
+ */
+#[ResponseDto(case: CaseStyle::SnakeCase)]
 final readonly class UserResponse
 {
     public function __construct(
@@ -21,6 +27,6 @@ final readonly class UserResponse
         public string $password,
 
         #[SerializeAs('member_since')]
-        public DateTimeImmutable $createdAt,
+        public string $createdAt,
     ) {}
 }

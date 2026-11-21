@@ -6,5 +6,6 @@ return [
     'headers'  => $_ENV['CORS_HEADERS']  ?? 'Content-Type, Authorization',
     'max_age'  => $_ENV['CORS_MAX_AGE']  ?? '86400',
     'exposed_headers' => $_ENV['CORS_EXPOSED_HEADERS'] ?? '',
-    'credentials' => $_ENV['CORS_CREDENTIALS'] ?? false,
+    // .env values are strings, so parse it: "false" must not count as true
+    'credentials' => filter_var($_ENV['CORS_CREDENTIALS'] ?? false, FILTER_VALIDATE_BOOLEAN),
 ];

@@ -1,5 +1,8 @@
-# antares
-Lightweight API-focused PHP framework for PHP 8.2+. Built around explicitness, type safety, and contract-first design.
+# antares-app
+
+The skeleton application for [Antares](https://github.com/johnlesis/antares), a lightweight API-focused PHP framework for PHP 8.2+, built around explicitness, type safety, and contract-first design.
+
+📖 **Documentation:** [antares-framework.vercel.app](https://antares-framework.vercel.app/)
 
 ## Creator Message
 
@@ -27,1141 +30,141 @@ This is open source because that's what open source is for. Give it a try, break
 things, open issues, contribute — all of it is welcome.
 
 ORM and other heavy dependencies are left out on purpose. That's your call, not mine.
- 
-## Installation
+
+## Requirements
+
+- PHP 8.2+
+- Composer
+- For migrations: the PDO extension for your database (`pdo_mysql`, `pdo_pgsql`, `pdo_sqlite`, `pdo_sqlsrv` or `pdo_oci`)
+
+## Create a Project
 
 ```bash
-composer require fatjon-lleshi/antares
+composer create-project fatjon-lleshi/antares-app my-api
+cd my-api
 ```
 
-## Quick Start
+This installs the framework and copies `.env.example` to `.env`. Edit `.env` to set your database credentials and other settings (see [Configuration](#configuration)).
 
-```php
-// public/index.php
-Application::create(__DIR__ . '/..')
-    ->providers([AppServiceProvider::class])
-    ->routeProviders([RouteServiceProvider::class])
-    ->middleware([LogMiddleware::class])
-    ->run();
+## Run It
+
+```bash
+composer serve
 ```
 
-## Application Boot
+This starts PHP's built-in server on [http://localhost:8080](http://localhost:8080). It runs:
 
-The boot sequence runs in this order:
-
-1. `.env` is loaded via `vlucas/phpdotenv`
-2. Container is created
-3. Bridge packages are auto-discovered via `installed.json`
-4. `providers` are registered — container bindings and singletons
-5. `routeProviders` are registered — controllers registered with the router
-6. Route cache is loaded (production) or built fresh (local)
-7. Dispatcher, ErrorHandler, and Pipeline are wired up
-
----
-
-## Service Providers
-
-Implement `ServiceProvider` to register container bindings and singletons. Use singletons for anything that needs values from `.env` since the container cannot autowire primitives:
-
-```php
-use Antares\ServiceProvider;
-use Antares\Container\Container;
-
-class AppServiceProvider implements ServiceProvider
-{
-    public function register(Container $container): void
-    {
-        $container->bind(LoggerInterface::class, FileLogger::class);
-
-        $container->singleton(Mailer::class, fn() => new Mailer(
-            host: $_ENV['MAIL_HOST'],
-            port: (int) $_ENV['MAIL_PORT'],
-            secret: $_ENV['MAIL_SECRET'],
-        ));
-
-        $container->scoped(UserContext::class, fn() => new UserContext());
-    }
-}
+```bash
+php -S localhost:8080 -t public public/index.php
 ```
 
-### Binding Types
+Keep the `public/index.php` at the end if you start the server yourself. Without it, PHP serves paths that look like files (such as `/openapi.json`) as static files and returns its own 404.
 
-| Method | Lifetime | Use case |
-|--------|----------|----------|
-| `bind()` | New instance every `make()` call | Stateless services |
-| `singleton()` | Single instance for the entire process | DB connections, loggers, config |
-| `scoped()` | Single instance per request, reset on next | Authenticated user, tenant, request context |
+Then open:
 
-`scoped()` behaves like `singleton()` under traditional FPM since the process dies after each request. Under FrankenPHP and Swoole worker mode, scoped instances are automatically cleared at the start of each request — making them safe for storing request-specific state. Use `scoped()` whenever a binding should be fresh per request but shared across multiple points within that same request.
+| URL | What you get |
+|---|---|
+| [http://localhost:8080/](http://localhost:8080/) | A welcome message |
+| [http://localhost:8080/health](http://localhost:8080/health) | `{"status": "ok"}` |
+| [http://localhost:8080/docs](http://localhost:8080/docs) | Swagger UI for your API, generated from your code |
+| [http://localhost:8080/openapi.json](http://localhost:8080/openapi.json) | The OpenAPI 3 spec |
 
----
+The built-in server is for development only. In production, point your web server (nginx + PHP-FPM, Apache, …) at the `public/` directory, or use one of the worker runtimes below.
 
-## Route Providers
+### FrankenPHP (worker mode)
 
-Implement `ServiceProvider` to register controllers with the router:
+`worker.php` keeps the app booted between requests:
 
-```php
-use Antares\ServiceProvider;
-use Antares\Container\Container;
-use Antares\Router\Router;
-
-class RouteServiceProvider implements ServiceProvider
-{
-    public function register(Container $container): void
-    {
-        $router = $container->make(Router::class);
-        $router->register(UserController::class);
-        $router->register(PostController::class);
-    }
-}
+```bash
+frankenphp php-server --worker worker.php
 ```
 
----
+### Swoole
 
-## Controllers
+`swoole.php` starts a Swoole HTTP server (requires the `swoole` extension):
 
-Define routes with PHP attributes. The dispatcher resolves all dependencies automatically:
-
-```php
-use Antares\Router\Attributes\Get;
-use Antares\Router\Attributes\Post;
-use Antares\Router\Attributes\Delete;
-
-class UserController
-{
-    #[Get('/users')]
-    public function index(): array
-    {
-        return ['users' => []];
-    }
-
-    #[Get('/users/{id}')]
-    public function show(int $id): UserResponse
-    {
-        return new UserResponse(id: $id, firstName: 'John', lastName: 'Doe');
-    }
-
-    #[Post('/users', 201)]
-    public function store(CreateUserRequest $request): UserResponse
-    {
-        return new UserResponse(id: 1, firstName: $request->firstName, lastName: $request->lastName);
-    }
-}
+```bash
+composer require ilexn/swoole-psr7
+php swoole.php
 ```
 
-### Controller Return Types
+See [Application](https://antares-framework.vercel.app/core/application/#running-the-app) for how each runtime works.
 
-The dispatcher handles four return types:
+## Project Structure
 
-**`#[ResponseDto]` object** — serialized automatically with case conversion and all serialization attributes applied:
-```php
-#[Post('/users', 201)]
-public function store(CreateUserRequest $request): UserResponse
-{
-    return new UserResponse(id: 1, name: $request->name);
-}
+```
+my-api/
+├── app/
+│   ├── Controllers/          WelcomeController: the / and /health routes
+│   ├── DTOs/
+│   │   ├── Request/          CreateUserRequest: an example request DTO with validation
+│   │   └── Response/         UserResponse: an example response DTO
+│   ├── Guards/               AuthGuard: an example bearer-token guard
+│   ├── Middleware/           CorsMiddleware, configured in config/cors.php
+│   ├── Providers/
+│   │   ├── AppServiceProvider.php     container bindings
+│   │   └── RouteServiceProvider.php   registers your controllers
+│   └── Resolvers/            PaginationResolver: an example #[Inject] resolver
+├── config/                   app.php, cors.php, routes.php
+├── database/migrations/      SQL migrations, run with vendor/bin/antares migrate
+├── public/index.php          entry point for PHP-FPM and the built-in server
+├── storage/                  cache/ (route cache), logs/, uploads/
+├── worker.php                entry point for FrankenPHP worker mode
+├── swoole.php                entry point for Swoole
+└── .env                      your local settings (not committed)
 ```
 
-**`array`** — encoded directly as JSON with no transformation:
-```php
-#[Get('/health')]
-public function health(): array
-{
-    return ['status' => 'ok', 'version' => '1.0.0'];
-}
-```
+To add an endpoint: create a controller in `app/Controllers`, then register it in `app/Providers/RouteServiceProvider.php`. See [Controllers](https://antares-framework.vercel.app/features/controllers/).
 
-**`null`** — empty response with the route's status code:
-```php
-#[Delete('/users/{id}', 204)]
-public function destroy(int $id): void
-{
-    // returns 204 No Content
-}
-```
+## Configuration
 
-**`Nyholm\Psr7\Response`** — returned as-is, giving you full control over status code, headers, and body:
-```php
-use Nyholm\Psr7\Response;
-use Psr\Http\Message\ResponseInterface;
+Settings live in `.env`. Real environment variables (from Docker, systemd, your shell, …) override it.
 
-#[Get('/download/{id}')]
-public function download(int $id): ResponseInterface
-{
-    $content = file_get_contents('/path/to/file');
+| Variable | Default | What it does |
+|---|---|---|
+| `APP_ENV` | `local` | Set `production` on live servers: turns on route caching, and turns off error details and API docs by default |
+| `APP_DEBUG` | on, off in production | Adds the real error to `500` responses. [More](https://antares-framework.vercel.app/features/error-handling/#debug-mode) |
+| `APP_DOCS` | on, off in production | Serves `/docs` and `/openapi.json`. [More](https://antares-framework.vercel.app/features/openapi/#turning-the-docs-on-or-off) |
+| `DB_DRIVER`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | `mysql`, `127.0.0.1`, the driver's port | Database connection for migrations. [More](https://antares-framework.vercel.app/features/migrations/#connection) |
+| `CORS_ORIGIN`, `CORS_METHODS`, `CORS_HEADERS`, … | see `config/cors.php` | Settings for `CorsMiddleware` |
+| `MAX_REQUESTS` | no limit | FrankenPHP only: restart each worker after this many requests |
 
-    return new Response(
-        status: 200,
-        headers: [
-            'Content-Type'        => 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="file.pdf"',
-        ],
-        body: $content,
-    );
-}
-```
-
-### Query Parameters
-
-Scalar parameters not matching a route segment are resolved from the query string automatically and cast to the declared type:
-
-```php
-#[Get('/users')]
-public function index(int $page = 1, int $limit = 20): array
-{
-    // GET /users?page=2&limit=10
-    // $page = 2, $limit = 10
-}
-```
-
----
-
-## Request DTOs
-
-Mark a class with `#[Dto]` to have it automatically hydrated and validated from the request body. All validation errors are **collected together** — every field is validated and all errors are returned at once, never stopping at the first failure:
-
-```php
-use Antares\Validation\Attributes\Dto;
-use Antares\Validation\Attributes\Email;
-use Antares\Validation\Attributes\MinLength;
-use Antares\Validation\Attributes\NotBlank;
-use Antares\Validation\Attributes\Min;
-
-#[Dto]
-readonly class CreateUserRequest
-{
-    public function __construct(
-        #[NotBlank]
-        #[MinLength(3)]
-        public string $firstName,
-
-        #[NotBlank]
-        public string $lastName,
-
-        #[Email]
-        public string $email,
-
-        #[Min(18)]
-        public int $age,
-    ) {}
-}
-```
-
-If validation fails the response is a `422` with all errors collected:
-
-```json
-{
-    "type": "https://antares.dev/errors",
-    "title": "Validation failed",
-    "status": 422,
-    "errors": {
-        "firstName": ["Must be at least 3 characters"],
-        "email": ["Invalid email address"],
-        "age": ["Must be at least 18"]
-    }
-}
-```
-
-### Strict Mode
-
-Add `#[Strict]` to reject requests with extra fields not declared in the DTO:
-
-```php
-#[Dto]
-#[Strict]
-readonly class CreateUserRequest
-{
-    public function __construct(
-        public string $firstName,
-        public string $email,
-    ) {}
-}
-```
-
----
-
-## File Uploads
-
-Inject `UploadedFileInterface` directly into a controller parameter. The parameter name must match the field name in the multipart request. Use `#[File]` to validate size and MIME type:
-
-```php
-use Psr\Http\Message\UploadedFileInterface;
-use Antares\Validation\Attributes\File;
-
-class MediaController
-{
-    #[Post('/upload', 201)]
-    public function upload(
-        #[File(maxSize: 5 * 1024 * 1024, mimeTypes: ['image/jpeg', 'image/png'])]
-        UploadedFileInterface $avatar,
-    ): array {
-        $avatar->moveTo('/storage/' . uniqid() . '.jpg');
-        return ['uploaded' => true];
-    }
-}
-```
-
-If the file is missing or fails validation a `400` is returned automatically.
-
----
-
-## Validation Attributes
-
-Antares ships with a full set of validation attributes:
-
-| Attribute | Description |
-|-----------|-------------|
-| `#[NotBlank]` | Value must not be empty or whitespace |
-| `#[NotNull]` | Value must not be null |
-| `#[Email]` | Valid email address |
-| `#[Url]` | Valid URL |
-| `#[Uuid]` | Valid UUID |
-| `#[Ip]` | Valid IP address |
-| `#[Phone]` | Valid phone number |
-| `#[Date]` | Valid date string (Y-m-d) |
-| `#[DateTime]` | Valid datetime string |
-| `#[Pattern('/regex/')]` | Matches a regex pattern |
-| `#[Min(n)]` | Minimum numeric value |
-| `#[Max(n)]` | Maximum numeric value |
-| `#[Between(min, max)]` | Numeric value within range |
-| `#[Positive]` | Value must be greater than 0 |
-| `#[Negative]` | Value must be less than 0 |
-| `#[MinLength(n)]` | Minimum string length |
-| `#[MaxLength(n)]` | Maximum string length |
-| `#[Size(min, max)]` | String length within range |
-| `#[Alpha]` | Only alphabetic characters |
-| `#[AlphaNumeric]` | Only alphanumeric characters |
-| `#[Numeric]` | Only numeric characters |
-| `#[HexColor]` | Valid hex color (`#fff` or `#ffffff`) |
-| `#[Json]` | Valid JSON string |
-| `#[In(['a', 'b'])]` | Value must be in the given list |
-| `#[InEnum(StatusEnum::class)]` | Value must be a valid backed enum case |
-| `#[ArrayOf('string')]` | Array of a specific type or class |
-
-### Creating Custom Validation Attributes
-
-Implement `ValidationAttribute` to create your own. Return `null` if valid, return an error string if not:
-
-```php
-use Antares\Validation\Attributes\ValidationAttribute;
-use Attribute;
-
-#[Attribute(Attribute::TARGET_PARAMETER | Attribute::IS_REPEATABLE)]
-final class Lowercase implements ValidationAttribute
-{
-    public function validate(mixed $value): ?string
-    {
-        if (!is_string($value)) {
-            return null;
-        }
-
-        if ($value !== strtolower($value)) {
-            return "The value must be lowercase.";
-        }
-
-        return null;
-    }
-}
-```
-
-Use it like any built-in attribute:
-
-```php
-#[Dto]
-readonly class CreateTagRequest
-{
-    public function __construct(
-        #[NotBlank]
-        #[Lowercase]
-        public string $name,
-    ) {}
-}
-```
-
----
-
-## Response DTOs
-
-Mark a class with `#[ResponseDto]` to control serialization. The dispatcher detects the attribute automatically and serializes the return value:
-
-```php
-use Antares\Serialization\Attributes\ResponseDto;
-use Antares\Serialization\Attributes\Hide;
-use Antares\Serialization\Attributes\SerializeAs;
-use Antares\Serialization\Attributes\Computed;
-
-#[ResponseDto(case: 'snake_case')]
-readonly class UserResponse
-{
-    public function __construct(
-        public int $id,
-        public string $firstName,
-        public string $lastName,
-        #[Hide]
-        public string $passwordHash,
-        #[SerializeAs('email')]
-        public string $emailAddress,
-    ) {}
-
-    #[Computed]
-    public function getFullName(): string
-    {
-        return $this->firstName . ' ' . $this->lastName;
-    }
-}
-```
-
-Output:
-```json
-{
-    "id": 1,
-    "first_name": "John",
-    "last_name": "Doe",
-    "email": "john@example.com",
-    "full_name": "John Doe"
-}
-```
-
-### Serialization Attributes
-
-| Attribute | Target | Description |
-|-----------|--------|-------------|
-| `#[ResponseDto(case: 'snake_case')]` | Class | Marks class as serializable response, sets output case |
-| `#[Hide]` | Property | Excludes property from serialized output |
-| `#[SerializeAs('key')]` | Property | Overrides the output key name |
-| `#[Computed]` | Method | Includes method return value in output. `get` prefix is stripped — `getFullName()` becomes `full_name` |
-
-### Case Options
-
-| Value | Example |
-|-------|---------|
-| `snake_case` (default) | `first_name` |
-| `camel_case` | `firstName` |
-| `pascal_case` | `FirstName` |
-| `kebab_case` | `first-name` |
-
----
-
-## Middleware
-
-Implement `MiddlewareInterface` and pass class strings to `->middleware([])`. Middleware runs globally on every request in the order declared:
-
-```php
-use Antares\Middleware\MiddlewareInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
-
-class LogMiddleware implements MiddlewareInterface
-{
-    public function handle(ServerRequestInterface $request, callable $next): ResponseInterface
-    {
-        $start = microtime(true);
-        $response = $next($request);
-        $elapsed = round((microtime(true) - $start) * 1000);
-
-        return $response->withHeader('X-Response-Time', $elapsed . 'ms');
-    }
-}
-```
-
----
-
-## Guards
-
-Guards protect individual routes by resolving a value from the request and injecting it into a specific controller parameter. Unlike middleware which runs globally on every request, guards run only on the routes they are applied to. Routes without a `#[Guards]` parameter are fully public.
-
-### Defining a Guard
-
-Implement the `Guard` interface. Throw `HttpException` to reject the request:
-
-```php
-use Antares\Http\Guards\Guard;
-use Antares\Exceptions\HttpException;
-use Psr\Http\Message\ServerRequestInterface;
-
-interface Guard
-{
-    public function resolve(ServerRequestInterface $request): mixed;
-}
-```
-
-### JWT Authentication Guard
-
-Resolve the authenticated user from a Bearer token:
-
-```php
-class JwtGuard implements Guard
-{
-    public function __construct(
-        private readonly string $secret,
-    ) {}
-
-    public function resolve(ServerRequestInterface $request): mixed
-    {
-        $header = $request->getHeaderLine('Authorization');
-
-        if (empty($header) || !str_starts_with($header, 'Bearer ')) {
-            throw new HttpException(401, 'Missing or invalid Authorization header');
-        }
-
-        $token = substr($header, 7);
-        $payload = $this->decodeToken($token);
-
-        if ($payload === null) {
-            throw new HttpException(401, 'Invalid or expired token');
-        }
-
-        return new AuthUser(
-            id: $payload['sub'],
-            email: $payload['email'],
-            role: $payload['role'],
-        );
-    }
-
-    private function decodeToken(string $token): ?array
-    {
-        // decode and verify JWT against $this->secret
-        // return payload array or null if invalid
-    }
-}
-```
-
-Register it as a singleton since it needs `JWT_SECRET` from `.env`:
-
-```php
-$container->singleton(JwtGuard::class, fn() => new JwtGuard(
-    secret: $_ENV['JWT_SECRET'],
-));
-```
-
-### API Key Guard
-
-Resolve a client from an API key header:
-
-```php
-class ApiKeyGuard implements Guard
-{
-    public function __construct(
-        private readonly ApiClientRepository $clients,
-    ) {}
-
-    public function resolve(ServerRequestInterface $request): mixed
-    {
-        $key = $request->getHeaderLine('X-Api-Key');
-
-        if (empty($key)) {
-            throw new HttpException(401, 'Missing API key');
-        }
-
-        $client = $this->clients->findByKey($key);
-
-        if ($client === null) {
-            throw new HttpException(401, 'Invalid API key');
-        }
-
-        return $client;
-    }
-}
-```
-
-### Role-Based Access Guard
-
-Build on top of an existing guard to restrict access by role:
-
-```php
-class AdminGuard implements Guard
-{
-    public function __construct(
-        private readonly JwtGuard $jwtGuard,
-    ) {}
-
-    public function resolve(ServerRequestInterface $request): mixed
-    {
-        $user = $this->jwtGuard->resolve($request);
-
-        if ($user->role !== 'admin') {
-            throw new HttpException(403, 'Forbidden');
-        }
-
-        return $user;
-    }
-}
-```
-
-### Multi-Tenant Guard
-
-Resolve the current tenant and inject it into the controller:
-
-```php
-class TenantGuard implements Guard
-{
-    public function __construct(
-        private readonly TenantRepository $tenants,
-    ) {}
-
-    public function resolve(ServerRequestInterface $request): mixed
-    {
-        $host = $request->getUri()->getHost();
-        $subdomain = explode('.', $host)[0];
-
-        $tenant = $this->tenants->findBySubdomain($subdomain);
-
-        if ($tenant === null) {
-            throw new HttpException(404, 'Tenant not found');
-        }
-
-        return $tenant;
-    }
-}
-```
-
-### Guards and Worker Mode
-
-Guards are stateless by design — `resolve()` produces a value, returns it, and stores nothing on the guard itself. The resolved value lives on the controller parameter. This makes guards inherently safe under FrankenPHP and Swoole worker mode.
-
-Register guards as singletons when they have constructor dependencies:
-
-```php
-$container->singleton(JwtGuard::class, fn() => new JwtGuard(
-    secret: $_ENV['JWT_SECRET'],
-));
-```
-
-If a guard has no constructor dependencies, the container will autowire it automatically — no registration needed.
-
-If you need to share a resolved value across multiple points within the same request — for example fetching the current user from the DB only once — use a `scoped()` binding as a request-scoped cache. This is an advanced pattern and not the typical guard use case:
-
-```php
-$container->scoped(CurrentUser::class, fn() => new CurrentUser());
-```
-
-```php
-class JwtGuard implements Guard
-{
-    public function __construct(
-        private readonly string $secret,
-        private readonly UserRepository $users,
-        private readonly CurrentUser $currentUser,
-    ) {}
-
-    public function resolve(ServerRequestInterface $request): mixed
-    {
-        if ($this->currentUser->user !== null) {
-            return $this->currentUser->user;
-        }
-
-        $user = $this->users->findById($this->decodeToken($request));
-
-        if ($user === null) {
-            throw new HttpException(401, 'User not found');
-        }
-
-        $this->currentUser->user = $user;
-        return $this->currentUser->user;
-    }
-}
-```
-
-`scoped()` instances are cleared automatically at the start of each request — safe under FPM, FrankenPHP, and Swoole.
-
-### Using Guards on Routes
-
-Apply `#[Guards(GuardClass::class)]` to the parameter that should receive the resolved value. The guard runs before the rest of the parameters are resolved — if it throws, the request is rejected immediately:
-
-```php
-use Antares\Http\Attributes\Guards;
-use Antares\Router\Attributes\Get;
-use Antares\Router\Attributes\Post;
-use Antares\Router\Attributes\Delete;
-
-class PostController
-{
-    #[Get('/posts')]
-    public function index(): array
-    {
-        return ['posts' => []];
-    }
-
-    #[Post('/posts', 201)]
-    public function store(
-        #[Guards(JwtGuard::class)] AuthUser $user,
-        CreatePostRequest $request,
-    ): PostResponse {
-        return new PostResponse(
-            id: 1,
-            title: $request->title,
-            authorId: $user->id,
-        );
-    }
-
-    #[Delete('/posts/{id}', 204)]
-    public function destroy(
-        #[Guards(AdminGuard::class)] AuthUser $user,
-        int $id,
-    ): void {
-        // only admins reach here
-    }
-}
-```
-
-Multiple guards can be used across the same controller — different routes can use different guards:
-
-```php
-class ReportController
-{
-    #[Get('/reports')]
-    public function index(
-        #[Guards(TenantGuard::class)] Tenant $tenant,
-        #[Guards(JwtGuard::class)] AuthUser $user,
-    ): array {
-        return ['tenant' => $tenant->id, 'user' => $user->id];
-    }
-}
-```
-
----
-
-## ResponseBag
-
-Set response headers from anywhere in the request lifecycle without touching the response object directly:
-
-```php
-use Antares\Http\ResponseBag;
-
-ResponseBag::header('X-Request-Id', uniqid());
-ResponseBag::header('X-Rate-Limit-Remaining', '99');
-```
-
-Headers are applied to the final response automatically. `ResponseBag` is cleared at the start of every request — safe under FPM, FrankenPHP, and Swoole worker mode.
-
----
-
-## Error Handling
-
-All exceptions are caught and converted to RFC 7807 JSON responses automatically:
-
-| Exception | Status Code |
-|-----------|-------------|
-| `ValidationException` | 422 |
-| `HydrationException` | 400 |
-| `HttpException($code)` | `$code` |
-| Any other `Throwable` | 500 |
-
-Throw `HttpException` anywhere in your code:
-
-```php
-use Antares\Exceptions\HttpException;
-
-throw new HttpException(403, 'Forbidden');
-throw new HttpException(404, 'User not found');
-```
-
----
-
-## OpenAPI Documentation
-
-Antares auto-generates an OpenAPI 3.0 spec from your controllers, request DTOs, and response DTOs. A `GET /openapi` endpoint is registered automatically on boot — no configuration needed.
-
-The spec is built entirely from your code:
-
-- Route attributes (`#[Get]`, `#[Post]`, etc.) define the paths and methods
-- Request DTO validation attributes define the request body schema and constraints — `#[Email]`, `#[Min]`, `#[MaxLength]` etc. are reflected as OpenAPI constraints
-- When a controller method returns a `#[ResponseDto]` class, the response schema is auto-generated from its properties and serialization attributes
-- `#[Hide]` properties are excluded from both request and response schemas
-- `#[SerializeAs]` key overrides are reflected in the response schema
-
-For example, this controller method:
-
-```php
-#[Post('/users', 201)]
-public function store(CreateUserRequest $request): UserResponse {}
-```
-
-Generates a full OpenAPI path entry with the request body schema derived from `CreateUserRequest` validation attributes and the `201` response schema derived from `UserResponse` serialization attributes — with no extra work.
-
-Mark a route as deprecated in the spec with `#[Deprecated]`:
-
-```php
-use Antares\OpenApi\Attributes\Deprecated;
-use Antares\Router\Attributes\Get;
-
-class UserController
-{
-    #[Get('/v1/users')]
-    #[Deprecated]
-    public function indexV1(): array
-    {
-        return ['users' => []];
-    }
-
-    #[Get('/v2/users')]
-    public function indexV2(): UserListResponse
-    {
-        return new UserListResponse(users: []);
-    }
-}
-```
-
----
-
-## Route Caching
-
-In production, routes are compiled and cached automatically when `APP_ENV=production`. The cache is invalidated automatically when `composer.lock`, `.env`, or any file in `app/` changes:
+On a production server, set at least:
 
 ```env
 APP_ENV=production
 ```
 
-Clear the cache manually:
+## Command Line
+
+Run these from the project root:
 
 ```bash
-php bin/antares cache:clear
+php vendor/bin/antares                                # list all commands
+php vendor/bin/antares make:controller UserController
+php vendor/bin/antares make:dto CreateUserRequest
+php vendor/bin/antares make:response UserResponse
+php vendor/bin/antares make:middleware AuthMiddleware
+php vendor/bin/antares make:guard JwtGuard
+php vendor/bin/antares make:migration create_posts_table
+php vendor/bin/antares migrate
+php vendor/bin/antares migrate:rollback
+php vendor/bin/antares cache:clear
 ```
 
----
+See [CLI](https://antares-framework.vercel.app/features/cli/) for what each one creates.
 
-## Auto-Discovery
+## Learn More
 
-Bridge packages declare their service providers in `composer.json` and are registered automatically on boot — no manual registration needed:
+Everything about the framework is in the documentation: [antares-framework.vercel.app](https://antares-framework.vercel.app/)
 
-```json
-"extra": {
-    "antares": {
-        "providers": [
-            "Antares\\Monolog\\MonologServiceProvider"
-        ]
-    }
-}
-```
-
----
-
-## CLI
-
-```bash
-php bin/antares make:controller UserController
-php bin/antares make:dto CreateUserRequest
-php bin/antares make:response UserResponse
-php bin/antares make:middleware AuthMiddleware
-php bin/antares make:guard JwtGuard
-php bin/antares cache:clear
-```
-
----
-
-## Async Runtimes
-
-Antares supports three runtimes. All three go through the same `handle()` method — same providers, same routes, same middleware.
-
-### Traditional FPM
-
-```php
-Application::create(__DIR__ . '/..')
-    ->providers([AppServiceProvider::class])
-    ->routeProviders([RouteServiceProvider::class])
-    ->middleware([LogMiddleware::class])
-    ->run();
-```
-
-### FrankenPHP
-
-No additional dependencies needed. Create `worker.php` at the project root:
-
-```php
-Application::create(__DIR__)
-    ->providers([AppServiceProvider::class])
-    ->routeProviders([RouteServiceProvider::class])
-    ->middleware([LogMiddleware::class])
-    ->runWorker();
-```
-
-Point FrankenPHP at it via environment variable or `Caddyfile`:
-
-```env
-FRANKENPHP_CONFIG="worker worker.php"
-```
-
-### Swoole
-
-```bash
-pecl install swoole
-composer require ilexn/swoole-psr7
-```
-
-Create `swoole.php` at the project root:
-
-```php
-Application::create(__DIR__)
-    ->providers([AppServiceProvider::class])
-    ->routeProviders([RouteServiceProvider::class])
-    ->middleware([LogMiddleware::class])
-    ->runSwoole(host: '0.0.0.0', port: 8000);
-```
-
-Then run:
-
-```bash
-php swoole.php
-```
-
-### Custom Runtimes
-
-`handle()` accepts any PSR-7 `ServerRequestInterface` and returns a PSR-7 `ResponseInterface` — you can wire up any runtime yourself:
-
-```php
-$app = Application::create(__DIR__)
-    ->providers([AppServiceProvider::class])
-    ->routeProviders([RouteServiceProvider::class]);
-
-$app->boot();
-
-$response = $app->handle($psrRequest);
-```
-
-This works with ReactPHP, RoadRunner, Revolt, or any other PSR-7 compatible runtime.
-
----
-
-## Full Example
-
-A complete API with all features combined.
-
-**`.env`:**
-```env
-APP_ENV=local
-JWT_SECRET=supersecret
-MAIL_HOST=smtp.example.com
-MAIL_PORT=587
-MAIL_SECRET=mailsecret
-```
-
-**`public/index.php`:**
-```php
-Application::create(__DIR__ . '/..')
-    ->providers([AppServiceProvider::class])
-    ->routeProviders([RouteServiceProvider::class])
-    ->middleware([LogMiddleware::class])
-    ->run();
-```
-
-**`AppServiceProvider.php`:**
-```php
-class AppServiceProvider implements ServiceProvider
-{
-    public function register(Container $container): void
-    {
-        $container->singleton(JwtGuard::class, fn() => new JwtGuard(
-            secret: $_ENV['JWT_SECRET'],
-        ));
-
-        $container->singleton(Mailer::class, fn() => new Mailer(
-            host: $_ENV['MAIL_HOST'],
-            port: (int) $_ENV['MAIL_PORT'],
-            secret: $_ENV['MAIL_SECRET'],
-        ));
-
-        $container->scoped(CurrentUser::class, fn() => new CurrentUser());
-    }
-}
-```
-
-**`RouteServiceProvider.php`:**
-```php
-class RouteServiceProvider implements ServiceProvider
-{
-    public function register(Container $container): void
-    {
-        $router = $container->make(Router::class);
-        $router->register(PostController::class);
-    }
-}
-```
-
-**`LogMiddleware.php`:**
-```php
-class LogMiddleware implements MiddlewareInterface
-{
-    public function handle(ServerRequestInterface $request, callable $next): ResponseInterface
-    {
-        $response = $next($request);
-        return $response->withHeader('X-Request-Id', uniqid());
-    }
-}
-```
-
-**`JwtGuard.php`:**
-```php
-class JwtGuard implements Guard
-{
-    public function __construct(private readonly string $secret) {}
-
-    public function resolve(ServerRequestInterface $request): mixed
-    {
-        $header = $request->getHeaderLine('Authorization');
-
-        if (empty($header) || !str_starts_with($header, 'Bearer ')) {
-            throw new HttpException(401, 'Unauthorized');
-        }
-
-        $token = substr($header, 7);
-        $payload = $this->decodeToken($token);
-
-        if ($payload === null) {
-            throw new HttpException(401, 'Invalid or expired token');
-        }
-
-        return new AuthUser(id: $payload['sub'], role: $payload['role']);
-    }
-
-    private function decodeToken(string $token): ?array
-    {
-        // verify token against $this->secret
-    }
-}
-```
-
-**`CreatePostRequest.php`:**
-```php
-#[Dto]
-readonly class CreatePostRequest
-{
-    public function __construct(
-        #[NotBlank]
-        #[MinLength(5)]
-        #[MaxLength(100)]
-        public string $title,
-
-        #[NotBlank]
-        #[MinLength(20)]
-        public string $body,
-
-        #[In(['draft', 'published'])]
-        public string $status,
-    ) {}
-}
-```
-
-**`PostResponse.php`:**
-```php
-#[ResponseDto(case: 'snake_case')]
-readonly class PostResponse
-{
-    public function __construct(
-        public int $id,
-        public string $title,
-        public string $body,
-        public string $status,
-        public int $authorId,
-        #[Hide]
-        public string $internalNotes,
-        #[SerializeAs('created')]
-        public string $createdAt,
-    ) {}
-
-    #[Computed]
-    public function getExcerpt(): string
-    {
-        return substr($this->body, 0, 100) . '...';
-    }
-}
-```
-
-**`PostController.php`:**
-```php
-class PostController
-{
-    #[Get('/posts')]
-    public function index(int $page = 1, int $limit = 20): array
-    {
-        // GET /posts?page=2&limit=10
-        return ['posts' => [], 'page' => $page, 'limit' => $limit];
-    }
-
-    #[Get('/v1/posts/{id}')]
-    #[Deprecated]
-    public function showV1(int $id): array
-    {
-        return ['id' => $id];
-    }
-
-    #[Get('/v2/posts/{id}')]
-    public function show(int $id): PostResponse
-    {
-        return new PostResponse(
-            id: $id,
-            title: 'Hello World',
-            body: 'This is the full body of the post that will be excerpted in the response.',
-            status: 'published',
-            authorId: 1,
-            internalNotes: 'never exposed in response',
-            createdAt: '2024-01-15 10:30:00',
-        );
-    }
-
-    #[Post('/posts', 201)]
-    public function store(
-        #[Guards(JwtGuard::class)] AuthUser $user,
-        CreatePostRequest $request,
-    ): PostResponse {
-        return new PostResponse(
-            id: 1,
-            title: $request->title,
-            body: $request->body,
-            status: $request->status,
-            authorId: $user->id,
-            internalNotes: '',
-            createdAt: date('Y-m-d H:i:s'),
-        );
-    }
-
-    #[Delete('/posts/{id}', 204)]
-    public function destroy(
-        #[Guards(AdminGuard::class)] AuthUser $user,
-        int $id,
-    ): void {
-        // only admins reach here — AdminGuard throws 403 for non-admins
-    }
-}
-```
-
-**What happens on `POST /posts` with an invalid body:**
-```json
-{
-    "type": "https://antares.dev/errors",
-    "title": "Validation failed",
-    "status": 422,
-    "errors": {
-        "title": ["Must be at least 5 characters"],
-        "body": ["Must be at least 20 characters"],
-        "status": ["The value must be one of: draft, published"]
-    }
-}
-```
-
-**What `GET /v2/posts/1` returns:**
-```json
-{
-    "id": 1,
-    "title": "Hello World",
-    "body": "This is the full body of the post that will be excerpted in the response.",
-    "status": "published",
-    "author_id": 1,
-    "created": "2024-01-15 10:30:00",
-    "excerpt": "This is the full body of the post that will be excerpted in the response...."
-}
-```
-
-`GET /posts` — public, supports `?page` and `?limit` query parameters.
-`GET /v1/posts/{id}` — public, marked deprecated in OpenAPI spec.
-`GET /v2/posts/{id}` — public, returns serialized `PostResponse`.
-`POST /posts` — requires valid JWT, validates all fields, returns `201`.
-`DELETE /posts/{id}` — requires admin role, returns `204`.
-
----
-
-## Requirements
-
-- PHP 8.2+
+- [Quick Start](https://antares-framework.vercel.app/getting-started/quick-start/)
+- [Controllers](https://antares-framework.vercel.app/features/controllers/) and [DTOs](https://antares-framework.vercel.app/features/dtos/)
+- [Response DTOs](https://antares-framework.vercel.app/features/response-dtos/)
+- [Guards & Resolvers](https://antares-framework.vercel.app/features/guards/)
+- [Error Handling](https://antares-framework.vercel.app/features/error-handling/)
+- [OpenAPI](https://antares-framework.vercel.app/features/openapi/)
+- [Upgrading to 0.2](https://antares-framework.vercel.app/getting-started/upgrading/)
 
 ## License
 

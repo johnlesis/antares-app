@@ -30,13 +30,16 @@ final class CorsMiddleware implements MiddlewareInterface
             ]);
         }
 
-        $response = $next($request);
-
-        return $response
+        $response = $next($request)
             ->withHeader('Access-Control-Allow-Origin', $this->config['origin'])
             ->withHeader('Access-Control-Allow-Methods', $this->config['methods'])
             ->withHeader('Access-Control-Allow-Headers', $this->config['headers'])
-            ->withHeader('Access-Control-Expose-Headers', $this->config['exposed_headers'])
             ->withHeader('Access-Control-Allow-Credentials', $this->config['credentials'] ? 'true' : 'false');
+
+        if ($this->config['exposed_headers'] !== '') {
+            $response = $response->withHeader('Access-Control-Expose-Headers', $this->config['exposed_headers']);
+        }
+
+        return $response;
     }
 }

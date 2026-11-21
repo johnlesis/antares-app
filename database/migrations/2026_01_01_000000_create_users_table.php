@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+/**
+ * Example migration, written in MySQL syntax (AUTO_INCREMENT, ON UPDATE).
+ * Adjust the SQL if you use another DB_DRIVER.
+ */
 final class CreateUsersTable
 {
     public function up(\PDO $pdo): void
