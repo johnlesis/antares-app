@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "fatjon-lleshi/antares",
-            "version": "v0.2.1",
+            "version": "v0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares.git",
-                "reference": "fcf1d08d6f5a715e5f8e6648f487467cbba674fc"
+                "reference": "352c4c07f1fbd71ec4bc10a4751a755bce9ae29f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnlesis/antares/zipball/fcf1d08d6f5a715e5f8e6648f487467cbba674fc",
-                "reference": "fcf1d08d6f5a715e5f8e6648f487467cbba674fc",
+                "url": "https://api.github.com/repos/johnlesis/antares/zipball/352c4c07f1fbd71ec4bc10a4751a755bce9ae29f",
+                "reference": "352c4c07f1fbd71ec4bc10a4751a755bce9ae29f",
                 "shasum": ""
             },
             "require": {
@@ -72,11 +72,11 @@
                 "issues": "https://github.com/johnlesis/antares/issues",
                 "source": "https://github.com/johnlesis/antares"
             },
-            "time": "2026-11-21T17:17:59+00:00"
+            "time": "2026-11-21T17:49:58+00:00"
         },
         {
             "name": "fatjon-lleshi/antares-container",
-            "version": "v0.2.1",
+            "version": "v0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-container.git",
@@ -128,7 +128,7 @@
         },
         {
             "name": "fatjon-lleshi/antares-router",
-            "version": "v0.2.1",
+            "version": "v0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-router.git",
@@ -185,7 +185,7 @@
         },
         {
             "name": "fatjon-lleshi/antares-validation",
-            "version": "v0.2.1",
+            "version": "v0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnlesis/antares-validation.git",
