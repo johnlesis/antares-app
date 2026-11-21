@@ -8,4 +8,4 @@
 !/storage/uploads/.gitkeep
 .phpunit.result.cache
 .idea
-.vscode
+.vscodecomposer.lock
